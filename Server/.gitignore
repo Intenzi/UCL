@@ -1,4 +1,4 @@
-secrets.py
+secret.py
 venv/
 .idea/
 __pycache__/
