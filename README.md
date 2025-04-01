@@ -1,10 +1,9 @@
 <!-- PROJECT SHIELDS -->
-[![Contributors][contributors-shield]][contributors-url]
-[![Forks][forks-shield]][forks-url]
-[![Stargazers][stars-shield]][stars-url]
-[![Issues][issues-shield]][issues-url]
-[![Unlicense License][license-shield]][license-url]
-[![LinkedIn][linkedin-shield]][linkedin-url]
+![Contributors](https://img.shields.io/github/contributors-anon/Intenzi/UCL)
+![Forks](https://img.shields.io/github/forks/Intenzi/UCL?style=plastic)
+![Stargazers](https://img.shields.io/github/stars/Intenzi/UCL?style=plastic)
+![Issues](https://img.shields.io/github/issues/Intenzi/UCL)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 <!-- PROJECT LOGO -->
 <br />
