@@ -1,0 +1,6 @@
+Flask==3.1.0
+Flask_Cors==5.0.0
+GitPython==3.1.44
+requests==2.31.0
+tree_sitter_languages==1.10.2
+uvicorn==0.34.0
