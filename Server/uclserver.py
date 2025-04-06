@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS, cross_origin
 import os
 import requests
-from .ucl import UCLGenerator  # existing code
+from Server.ucl import UCLGenerator  # existing code
 
 
 # from secret import GEMINI_API_KEY
