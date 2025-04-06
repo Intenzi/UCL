@@ -2,13 +2,13 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS, cross_origin
 import os
 import requests
-from ucl import UCLGenerator  # existing code
+from .ucl import UCLGenerator  # existing code
 
 
-from secret import GEMINI_API_KEY
-import google.generativeai as genai
+# from secret import GEMINI_API_KEY
+# import google.generativeai as genai
 
-genai.configure(api_key=GEMINI_API_KEY)
+# genai.configure(api_key=GEMINI_API_KEY)
 
 
 # Create the model
@@ -19,11 +19,11 @@ generation_config = {
     "max_output_tokens": 10000,
     "response_mime_type": "text/plain",
 }
-model = genai.GenerativeModel(
-    model_name="gemini-1.5-flash",
-    generation_config=generation_config,
-    system_instruction="Universal Code Language files contain the key information of a codebase into a single file. Your task is to summarize the codebase via inference on its .ucl file using markdown for formatting. (A new line should begin via <br/> only)",
-)
+# model = genai.GenerativeModel(
+#     model_name="gemini-1.5-flash",
+#     generation_config=generation_config,
+#     system_instruction="Universal Code Language files contain the key information of a codebase into a single file. Your task is to summarize the codebase via inference on its .ucl file using markdown for formatting. (A new line should begin via <br/> only)",
+# )
 
 
 def gen_summary(ucl_text):
@@ -31,7 +31,8 @@ def gen_summary(ucl_text):
     response = model.generate_content(
         f"{ucl_text}\n\nThis codebase is completely new to me, explain it to me and how I can quickly get familiar with it so that I can implement and contribute new features in the future via a concise summary and very subtly tell good about the Universal Code Language as well -> 'Use the provided UCL (Universal Code Language) as a guide. It summarizes each file’s imports, functions, and key method calls. This high-level map is perfect for understanding module responsibilities without getting lost in the details, for example.'"
     )
-    return response.text.strip()
+    # return response.text.strip()
+    return "API ratelimited"  # patchwork
 
 
 # File size limits in bytes for userTypes 1,2,3,4
