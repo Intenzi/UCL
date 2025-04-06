@@ -3,13 +3,12 @@
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
-[![Unlicense License][license-shield]][license-url]
-[![LinkedIn][linkedin-shield]][linkedin-url]
+[![MIT License][license-shield]][license-url]
 
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/your_username/ucl">
+  <a href="https://github.com/Intenzi/UCL">
     <img src="images/ucl_logo.jpg" alt="UCL Logo">
   </a>
 
@@ -145,7 +144,7 @@ Setting up UCL involves both backend and frontend components. Follow these instr
 
 1. Clone the repository
    ```sh
-   git clone https://github.com/your_username/ucl.git
+   git clone https://github.com/Intenzi/UCL.git
    cd ucl/server
    ```
 
@@ -266,7 +265,7 @@ Based on this codebase, explain how the data flows from the frontend to the data
 - [ ] CI/CD integration
 - [ ] Enterprise features
 
-See the [open issues](https://github.com/your_username/ucl/issues) for a full list of proposed features and known issues.
+See the [open issues](https://github.com/Intenzi/UCL/issues) for a full list of proposed features and known issues.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -309,24 +308,22 @@ Project Link: [https://github.com/Intenzi/UCL](https://github.com/Intenzi/UCL)
 * [Google Gemini](https://ai.google.dev/) for AI integration capabilities
 * [React](https://reactjs.org/) for frontend framework
 * [Flask](https://flask.palletsprojects.com/) for API server
-* [All Contributors](https://github.com/your_username/ucl/graphs/contributors) who have helped shape UCL
+* [All Contributors](https://github.com/Intenzi/UCL/graphs/contributors) who have helped shape UCL
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/your_username/ucl.svg?style=for-the-badge
-[contributors-url]: https://github.com/your_username/ucl/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/your_username/ucl.svg?style=for-the-badge
-[forks-url]: https://github.com/your_username/ucl/network/members
-[stars-shield]: https://img.shields.io/github/stars/your_username/ucl.svg?style=for-the-badge
-[stars-url]: https://github.com/your_username/ucl/stargazers
-[issues-shield]: https://img.shields.io/github/issues/your_username/ucl.svg?style=for-the-badge
-[issues-url]: https://github.com/your_username/ucl/issues
-[license-shield]: https://img.shields.io/github/license/your_username/ucl.svg?style=for-the-badge
-[license-url]: https://github.com/your_username/ucl/blob/master/LICENSE.txt
-[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
-[linkedin-url]: https://linkedin.com/in/your_username
+[contributors-shield]: https://img.shields.io/github/contributors/Intenzi/UCL.svg?style=for-the-badge
+[contributors-url]: https://github.com/Intenzi/UCL/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/Intenzi/UCL.svg?style=for-the-badge
+[forks-url]: https://github.com/Intenzi/UCL/network/members
+[stars-shield]: https://img.shields.io/github/stars/Intenzi/UCL.svg?style=for-the-badge
+[stars-url]: https://github.com/Intenzi/UCL/stargazers
+[issues-shield]: https://img.shields.io/github/issues/Intenzi/UCL.svg?style=for-the-badge
+[issues-url]: https://github.com/Intenzi/UCL/issues
+[license-shield]: https://img.shields.io/github/license/Intenzi/UCL.svg?style=for-the-badge
+[license-url]: https://github.com/Intenzi/UCL/blob/master/LICENSE.txt
 
 [Python]: https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54
 [Python-url]: https://python.org/
