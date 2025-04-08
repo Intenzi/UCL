@@ -1,0 +1,12 @@
+# Server/.dockerignore
+Dockerfile
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+.pytest_cache/
+.git
+.gitignore
+venv/
+*.md
+.idea
