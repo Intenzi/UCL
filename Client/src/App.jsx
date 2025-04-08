@@ -258,10 +258,13 @@ function GeneratedPage() {
 			formData.append("userType", membership)
 
 			try {
-				const res = await fetch("http://localhost:5000/generateUCL", {
-					method: "POST",
-					body: formData,
-				})
+				const res = await fetch(
+					"https://ucl-981418329590.us-central1.run.app/generateUCL",
+					{
+						method: "POST",
+						body: formData,
+					}
+				)
 				const data = await res.json()
 
 				if (!res.ok) {
@@ -379,7 +382,7 @@ function GeneratedPage() {
 // -------- Main App Component with Routing --------
 function App() {
 	return (
-		<Router>
+		<Router basename="/UCL">
 			<Routes>
 				<Route path="/" element={<HomePage />} />
 				<Route path="/generated" element={<GeneratedPage />} />

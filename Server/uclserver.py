@@ -112,24 +112,25 @@ def generate_ucl():
     data = request.form
     repo_url = data.get("githubrepolink")
     user_type = data.get("userType")
-    if repo_url in (
-        "https://github.com/Intenzi/Tyranitar",
-        "https://github.com/Intenzi/Fighting-Game",
-    ):
-        local = (
-            r"C:\Users\ritvi\PycharmProjects\Tyranitar"
-            if "Tyranitar" in repo_url
-            else r"C:\Users\ritvi\OneDrive\Documents\Web Development\Fighting Game"
-        )
-        try:
-            generator = CustomUCLGenerator()
-            ucl_text = generator.generate_ucl_from_local(local)
-            metrics = compute_advanced_metrics(parse_ucl(ucl_text))
-            return jsonify({"text": ucl_text, "metrics": metrics})
-        except Exception as e:
-            return jsonify({"error": str(e)}), 500
+    # if repo_url in (
+    #     "https://github.com/Intenzi/Tyranitar",
+    #     "https://github.com/Intenzi/Fighting-Game",
+    # ):
+    #     local = (
+    #         r"C:\Users\ritvi\PycharmProjects\Tyranitar"
+    #         if "Tyranitar" in repo_url
+    #         else r"C:\Users\ritvi\OneDrive\Documents\Web Development\Fighting Game"
+    #     )
+    #     try:
+    #         generator = CustomUCLGenerator()
+    #         ucl_text = generator.generate_ucl_from_local(local)
+    #         metrics = compute_advanced_metrics(parse_ucl(ucl_text))
+    #         return jsonify({"text": ucl_text, "metrics": metrics})
+    #     except Exception as e:
+    #         return jsonify({"error": str(e)}), 500
 
     print(user_type)
+    print(repo_url)
     if not repo_url or not user_type:
         return jsonify({"error": "Missing githubrepolink or userType"}), 400
     if user_type not in ["1", "2", "3", "4"]:

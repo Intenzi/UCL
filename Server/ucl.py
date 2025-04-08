@@ -1,3 +1,4 @@
+import json
 import os
 import re
 import tempfile
@@ -860,3 +861,159 @@ class UCLGenerator:
                 # raise e
 
         return ucl_output
+
+    # --- NEW PRIVATE HELPER ---
+    def _build_ucl_structure(self, repo_path):
+        """
+        Internal helper to build the structured UCL representation of a codebase.
+        This contains the core logic reused by both old and new methods.
+
+        Args:
+            repo_path (Path): Path object for the codebase directory.
+
+        Returns:
+            dict: Structured UCL data including repo_root, file_tree, and parsed_files.
+        """
+        if not isinstance(repo_path, Path):
+             repo_path = Path(repo_path) # Ensure it's a Path object
+
+        # Get file structure relative to the repo_path
+        file_structure_rel_paths = self.get_file_structure(repo_path) # Expects list of relative Paths
+        self.log(f"Found {len(file_structure_rel_paths)} files to analyze for structure.")
+
+        # Build tree structure for file hierarchy display
+        file_tree = self.build_tree(file_structure_rel_paths)
+
+        # Structure to store parsed data
+        parsed_files_data = {}
+
+        # Process each file
+        for i, relative_file_path in enumerate(file_structure_rel_paths):
+            relative_file_path_str = str(relative_file_path).replace(os.sep, '/')
+            # self.log(f"Building structure for file {i + 1}/{len(file_structure_rel_paths)}: {relative_file_path_str}") # Can be verbose
+
+            full_path = repo_path / relative_file_path
+            extension = full_path.suffix
+
+            if extension not in self.LANGUAGE_MAP or extension not in self.parsers:
+                continue
+
+            # Assuming parse_file returns the detailed dictionary for a single file
+            parse_result = self.parse_file(full_path)
+
+            # Store the result using the relative path string as the key
+            parsed_files_data[relative_file_path_str] = parse_result
+
+        # Consolidate the final structure
+        ucl_structure = {
+            "repo_root": str(repo_path),
+            "file_tree": file_tree,
+            "parsed_files": parsed_files_data
+        }
+        return ucl_structure
+
+    # --- NEW PUBLIC METHODS FOR MCP ---
+
+    def generate_structured_ucl_from_local(self, local_dir, json_output_file=None):
+        """
+        Generates structured UCL data from a local directory FOR MCP USE.
+
+        Args:
+            local_dir (str): Path to the local codebase directory.
+            json_output_file (str, optional): If provided, saves the structured
+                                             UCL data as a JSON file. Defaults to None.
+
+        Returns:
+            dict: A dictionary containing the structured UCL data ('file_structure' and 'parsed_files').
+
+        Raises:
+            ValueError: If the directory does not exist.
+            Exception: For other processing errors.
+        """
+        local_dir_path = Path(local_dir)
+        if not local_dir_path.is_dir():
+            raise ValueError(f"Directory '{local_dir}' does not exist or is not a directory")
+
+        self.log(f"Generating STRUCTURED UCL for local directory: {local_dir_path}")
+        ucl_structure = self._build_ucl_structure(local_dir_path)
+
+        # Save structured data to JSON if requested
+        if json_output_file:
+            self._save_structure_to_json(ucl_structure, json_output_file)
+
+        return ucl_structure
+
+    def generate_structured_ucl_from_github(self, repo_url, clone_dir=None, json_output_file=None):
+        """
+        Generates structured UCL data from a GitHub repository FOR MCP USE.
+
+        Args:
+            repo_url (str): The URL of the GitHub repository.
+            clone_dir (str, optional): Specific directory to clone into.
+                                       If None, a temporary directory is used. Defaults to None.
+            json_output_file (str, optional): If provided, saves the structured UCL data as a JSON file.
+                                             Path is relative to the clone dir if specified, otherwise absolute.
+                                             Defaults to None.
+
+        Returns:
+            tuple: A tuple containing:
+                - dict: The structured UCL data ('file_structure', 'parsed_files').
+                - str: The path to the directory where the repo was cloned.
+
+        Raises:
+            Exception: If cloning or processing fails.
+        """
+        use_temp_dir = clone_dir is None
+        target_dir = clone_dir if clone_dir else tempfile.mkdtemp()
+        cloned_repo_path = None
+
+        try:
+            cloned_repo_path = self.clone_repository(repo_url, target_dir)
+            cloned_repo_path_obj = Path(cloned_repo_path) # Work with Path object
+            self.log(f"Generating STRUCTURED UCL for cloned repository: {cloned_repo_path_obj}")
+
+            ucl_structure = self._build_ucl_structure(cloned_repo_path_obj)
+
+            # Adjust json_output_file path if it's relative and save
+            effective_json_output = None
+            if json_output_file:
+                 # If clone_dir provided (not temp), treat json path relative to it or absolute
+                 if clone_dir:
+                      json_path = Path(json_output_file)
+                      if json_path.is_absolute():
+                           effective_json_output = json_path
+                      else:
+                           effective_json_output = Path(clone_dir).resolve() / json_path
+                 else: # Using temp dir, save relative to temp dir or absolute
+                      json_path = Path(json_output_file)
+                      if json_path.is_absolute():
+                            effective_json_output = json_path
+                      else:
+                           effective_json_output = cloned_repo_path_obj / json_path
+
+            if effective_json_output:
+                 self._save_structure_to_json(ucl_structure, effective_json_output)
+
+            # Return the structure and the path (as string for consistency)
+            return ucl_structure, str(cloned_repo_path)
+
+        except Exception as e:
+            # Clean up temp directory ONLY if we created it and an error occurred
+            if use_temp_dir and cloned_repo_path and Path(cloned_repo_path).exists():
+                self.log(f"Cleaning up temporary directory due to error: {cloned_repo_path}")
+                shutil.rmtree(cloned_repo_path, onerror=self.handle_remove_error)
+            raise # Re-raise the exception
+
+    # --- NEW PRIVATE HELPER FOR SAVING JSON ---
+    def _save_structure_to_json(self, structure, json_output_file):
+        """Saves the structured UCL data to a JSON file."""
+        try:
+            output_path = Path(json_output_file).resolve()
+            output_path.parent.mkdir(parents=True, exist_ok=True) # Ensure directory exists
+            with open(output_path, 'w', encoding='utf-8') as f:
+                # Use default=str to handle Path objects if any sneak in (shouldn't happen now)
+                json.dump(structure, f, indent=4, default=str)
+            self.log(f"Structured UCL data saved to {output_path}")
+        except Exception as e:
+            self.log(f"Error saving structured UCL data to {json_output_file}: {e}")
+            # Decide whether to raise or just log
