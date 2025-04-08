@@ -85,13 +85,7 @@ class CustomUCLGenerator(UCLGenerator):
 
 
 app = Flask(__name__)
-CORS(
-    app,
-    resources={
-        r"/generateUCL": {"origins": "http://localhost:5173"},
-        r"/generateSummary": {"origins": "http://localhost:5173"},
-    },
-)
+CORS(app)
 
 
 @app.route("/generateSummary", methods=["POST"])
