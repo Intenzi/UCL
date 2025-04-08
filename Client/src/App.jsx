@@ -6,11 +6,13 @@ import {
 	useNavigate,
 	useLocation,
 } from "react-router-dom"
+import { FaGithub, FaStar } from "react-icons/fa"
 import "./App.css"
 import img1 from "./assets/pythonn.png"
 import img2 from "./assets/java2.svg"
 import img3 from "./assets/js.png"
 
+const GITHUB_REPO_URL = "https://github.com/Intenzi/UCL"
 // -------- Home Page Component --------
 function HomePage() {
 	const [githubLink, setGithubLink] = useState("")
@@ -45,6 +47,22 @@ function HomePage() {
 
 	return (
 		<div className="app-container">
+			<div className="absolute top-4 right-4 z-20 flex flex-col items-end space-y-1">
+				<a
+					href={GITHUB_REPO_URL}
+					target="_blank"
+					rel="noopener noreferrer"
+					className="flex items-center gap-x-2 bg-gray-800 hover:bg-gray-700 text-white font-semibold py-2 px-4 border border-gray-600 rounded-lg shadow transition-colors duration-200 ease-in-out"
+					title="Star us on GitHub!"
+				>
+					<FaGithub className="w-5 h-5" />
+					<FaStar className="w-4 h-4 text-yellow-400" />
+					<span>Star us</span>
+				</a>
+				<span className="text-xs text-gray-400 bg-gray-900 bg-opacity-70 px-2 py-0.5 rounded">
+					Preview Version
+				</span>
+			</div>
 			<h1 className="text-3xl heading-animation">
 				<div className="heading-container">
 					{headingLetters.map((letter, index) => (
