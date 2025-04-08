@@ -10,6 +10,13 @@ ENV PORT 8080              # Define the port the app will run on (Cloud Run inje
 
 WORKDIR $APP_HOME          # Set the working directory in the container
 
+# downloading git cmdline tool for gitpython
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends git && \
+    # Clean up apt cache to keep image size down
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
 # Copy local code (from the Server directory context) to the container image
 COPY . ./
 
