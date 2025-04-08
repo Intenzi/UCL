@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS, cross_origin
 import os
 import requests
-from Server.ucl import UCLGenerator  # existing code
+from ucl import UCLGenerator  # existing code
 
 
 # from secret import GEMINI_API_KEY
@@ -300,5 +300,3 @@ def compute_advanced_metrics(parsed_data):
 
     return metrics
 
-
-app.run(host="0.0.0.0", debug=True, port=int(os.environ.get("PORT", 8080)))
