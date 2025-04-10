@@ -15,16 +15,19 @@
   <h1 align="center">Universal Code Language (UCL)</h1>
 
   <p align="center">
-    Revolutionizing codebase comprehension and context sharing
+    Revolutionizing codebase comprehension and context sharing.
     <br />
     <a href="https://github.com/Intenzi/UCL"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/Intenzi/UCL">View Demo</a>
+    <a href="https://intenzi.dev/UCL">View Demo</a>
     &middot;
     <a href="https://github.com/Intenzi/UCL/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
     &middot;
     <a href="https://github.com/Intenzi/UCL/issues/new?labels=enhancement&template=feature-request---.md">Request Feature</a>
+  </p>
+  <p align="center">
+    <strong>⭐ Star this repo if you like what you see!</strong>
   </p>
 </div>
 
@@ -150,7 +153,7 @@ Setting up UCL involves both backend and frontend components. Follow these instr
 
 2. Install Python dependencies
    ```sh
-   pip install tree-sitter flask tree_sitter_languages
+   pip install requirements.txt
    ```
 
 3. For Gemini API integration (optional but recommended)
@@ -195,7 +198,7 @@ UCL simplifies codebase comprehension through several key workflows:
 ### Generating UCL Files via Tkinter GUI
 
 ```sh
-python ucl.py
+python gui.py
 ```
 
 ### Querying a Codebase via CLI
@@ -206,7 +209,7 @@ python ucl.py --query "How does the authentication system work?" --context codeb
 
 ### Web Interface
 
-Access the full UCL experience by visiting `http://localhost:5173` after starting both the backend server and frontend client.
+Access the full UCL experience by visiting `http://localhost:5173/UCL` after starting both the backend server and frontend client.
 
 ![UCL Web Interface](images/landing.jpg)
 
