@@ -144,58 +144,177 @@ class UCLGenerator:
                 (comment) @comment
             """)
 
-        elif lang in ['javascript', 'typescript']:
+        elif lang == 'javascript':
+
             self.queries[ext]['import'] = language.query("""
-                (import_statement) @import
-                (import_clause) @import
-            """)
+            
+                    (import_statement) @import
+            
+                """)
+
             self.queries[ext]['class'] = language.query("""
-                (class_declaration
-                    name: (identifier) @class.name
-                    body: (class_body) @class.body
-                ) @class.def
-            """)
+            
+                    (class_declaration
+            
+                        name: (identifier) @class.name
+            
+                        body: (class_body) @class.body
+            
+                    ) @class.def
+            
+                """)
+
             self.queries[ext]['function'] = language.query("""
-                (function_declaration
-                    name: (identifier) @function.name
-                    parameters: (formal_parameters)? @function.parameters
-                    body: (statement_block) @function.body
-                ) @function.def
+            
+                    (function_declaration
+            
+                        name: (identifier) @function.name
+            
+                        parameters: (formal_parameters)? @function.parameters
+            
+                        body: (statement_block) @function.body
+            
+                    ) @function.def
+            
+            
+                    (method_definition
+            
+                        name: (property_identifier) @function.name
+            
+                        parameters: (formal_parameters)? @function.parameters
+            
+                        body: (statement_block) @function.body
+            
+                    ) @function.def
+            
+            
+                    (arrow_function
+            
+                        parameters: (formal_parameters)? @function.parameters
+            
+                        body: [ (statement_block) (expression) ] @function.body
+            
+                    ) @function.def
+            
+                """)
 
-                (method_definition
-                    name: (property_identifier) @function.name
-                    parameters: (formal_parameters)? @function.parameters
-                    body: (statement_block) @function.body
-                ) @function.def
-
-                (arrow_function
-                    parameters: (formal_parameters)? @function.parameters
-                    body: [ (statement_block) (expression) ] @function.body
-                ) @function.def # Note: Arrow functions might lack a direct @function.name capture easily
-            """)
             self.queries[ext]['call'] = language.query("""
-                (call_expression
-                    function: (identifier) @call.name
-                ) @call
+            
+                    (call_expression
+            
+                        function: (identifier) @call.name
+            
+                    ) @call
+            
+            
+                    (call_expression
+            
+                        function: (member_expression
+            
+                            object: (_) @call.object
+            
+                            property: (property_identifier) @call.method
+            
+                        )
+            
+                    ) @call
+            
+                """)
 
-                (call_expression
-                    function: (member_expression
-                        object: (_) @call.object  # Use (_) to capture various object types
-                        property: (property_identifier) @call.method
-                    )
-                ) @call
-            """)
             self.queries[ext]['comment'] = language.query("""
-                (comment) @comment
+            
+                    (comment) @comment
+            
+                """)
+
+        elif lang == 'typescript':
+
+            self.queries[ext]['import'] = language.query("""
+            
+                    (import_statement) @import
+            
+                """)
+
+            self.queries[ext]['class'] = language.query("""
+               (class_declaration
+                 name: (type_identifier) @class.name
+               ) @class.def
             """)
+
+            self.queries[ext]['function'] = language.query("""
+            
+                    (function_declaration
+            
+                        name: (identifier) @function.name
+            
+                        parameters: (formal_parameters)? @function.parameters
+            
+                        body: (statement_block) @function.body
+            
+                    ) @function.def
+            
+            
+                    (method_definition
+            
+                        name: (property_identifier) @function.name
+            
+                        parameters: (formal_parameters)? @function.parameters
+            
+                        body: (statement_block) @function.body
+            
+                    ) @function.def
+            
+            
+                    (arrow_function
+            
+                        parameters: (formal_parameters)? @function.parameters
+            
+                        body: [ (statement_block) (expression) ] @function.body
+            
+                    ) @function.def
+            
+                """)
+
+            self.queries[ext]['call'] = language.query("""
+            
+                    (call_expression
+            
+                        function: (identifier) @call.name
+            
+                    ) @call
+            
+            
+                    (call_expression
+            
+                        function: (member_expression
+            
+                            object: (_) @call.object
+            
+                            property: (property_identifier) @call.method
+            
+                        )
+            
+                    ) @call
+            
+                """)
+
+            self.queries[ext]['comment'] = language.query("""
+            
+                    (comment) @comment
+            
+                """)
+
             self.queries[ext]['class_attribute'] = language.query("""
-                (class_body
-                    (field_definition
+            
+                    (public_field_definition
+            
                         name: (property_identifier) @property.name
-                        value: (_)? @property.value
+            
+                        value: (_) @property.value
+            
                     ) @property.def
-                )
-            """)
+            
+                """)
 
         elif lang == 'java':
             self.queries[ext]['import'] = language.query("""
@@ -231,12 +350,13 @@ class UCLGenerator:
                 ) @call
 
                 (method_invocation
-                    object: (_) @call.object # Use (_) for various object types
+                    object: (_) @call.object ; Use (_) for various object types
                     name: (identifier) @call.method
                 ) @call
             """)
             self.queries[ext]['comment'] = language.query("""
-                (comment) @comment
+                (line_comment) @comment
+                (block_comment) @comment
             """)
             # Java doesn't have explicit 'raise' like Python, 'throw' is used
             self.queries[ext]['raise'] = language.query("""
