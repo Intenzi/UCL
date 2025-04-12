@@ -5,7 +5,7 @@ from tkinter import filedialog, scrolledtext, messagebox, ttk
 
 from threading import Thread
 
-from Server.ucl import UCLGenerator
+from ucl import UCLGenerator
 
 
 class UCLGeneratorGUI(tk.Tk):
