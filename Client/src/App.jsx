@@ -12,6 +12,10 @@ import img1 from "./assets/pythonn.png"
 import img2 from "./assets/java2.svg"
 import img3 from "./assets/js.png"
 
+const API_URL =
+	import.meta.env.VITE_API_URL ||
+	"https://ucl-981418329590.us-central1.run.app/generateUCL"
+
 const GITHUB_REPO_URL = "https://github.com/Intenzi/UCL"
 // -------- Home Page Component --------
 function HomePage() {
@@ -276,13 +280,10 @@ function GeneratedPage() {
 			formData.append("userType", membership)
 
 			try {
-				const res = await fetch(
-					"https://ucl-981418329590.us-central1.run.app/generateUCL",
-					{
-						method: "POST",
-						body: formData,
-					}
-				)
+				const res = await fetch(`${API_URL}/generateUCL`, {
+					method: "POST",
+					body: formData,
+				})
 				const data = await res.json()
 
 				if (!res.ok) {

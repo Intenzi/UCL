@@ -5,6 +5,10 @@ import { Bar } from "react-chartjs-2"
 import { Info, FileText, Lock } from "lucide-react"
 import { marked } from "marked"
 
+const API_URL =
+	import.meta.env.VITE_API_URL ||
+	"https://ucl-981418329590.us-central1.run.app/generateUCL"
+
 const CodeVisualization = ({ responseData, membership }) => {
 	const [activeTab, setActiveTab] = useState("metrics")
 	const [summary, setSummary] = useState(null)
@@ -34,16 +38,13 @@ This codebase consists of multiple components with varying responsibilities and 
 
 		setIsSummaryLoading(true)
 		try {
-			const response = await fetch(
-				"http://localhost:5000/generateSummary",
-				{
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					body: JSON.stringify({ ucl: responseData.text }),
-				}
-			)
+			const response = await fetch(`${API_URL}/generateSummary`, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({ ucl: responseData.text }),
+			})
 
 			if (!response.ok) {
 				throw new Error("Failed to generate summary")
