@@ -5,7 +5,7 @@ import tempfile
 from pathlib import Path
 import traceback
 import git
-from tree_sitter_languages import get_parser, get_language
+from tree_sitter_language_pack import get_parser, get_language
 import shutil  # Added for cleanup consistency
 import stat  # Added for cleanup consistency
 
@@ -463,6 +463,7 @@ class UCLGenerator:
         try:
             for pattern_index, capture_dict in query.matches(node):
                 # Try different capture names used in various languages
+                capture_dict = {k: v[0] if v else None for k, v in capture_dict.items()}
                 attr_name_node = capture_dict.get('attribute.name') or capture_dict.get('property.name')
                 if attr_name_node:
                     attribute_name = attr_name_node.text.decode('utf8')
@@ -490,6 +491,7 @@ class UCLGenerator:
         query = self.queries[extension]['comment']
         try:
             for pattern_index, capture_dict in query.matches(node):
+                capture_dict = {k: v[0] if v else None for k, v in capture_dict.items()}
                 comment_node = capture_dict.get('comment')
                 if comment_node:
                     comment = comment_node.text.decode('utf8').strip()
@@ -518,6 +520,7 @@ class UCLGenerator:
         query = self.queries[extension]['import']
         try:
             for pattern_index, capture_dict in query.matches(node):
+                capture_dict = {k: v[0] if v else None for k, v in capture_dict.items()}
                 # Capture the whole import statement for simplicity
                 import_node = capture_dict.get('import')
                 if import_node:
@@ -536,6 +539,7 @@ class UCLGenerator:
         query = self.queries[extension]['class']
         try:
             for pattern_index, capture_dict in query.matches(node):
+                capture_dict = {k:v[0] if v else None for k,v in capture_dict.items()}
                 class_name_node = capture_dict.get('class.name')
                 class_body_node = capture_dict.get('class.body')
                 class_def_node = capture_dict.get('class.def')  # Get the whole definition node
@@ -562,6 +566,7 @@ class UCLGenerator:
                     if class_body_node and 'function' in self.queries[extension]:
                         func_query = self.queries[extension]['function']
                         for func_pattern_index, func_capture_dict in func_query.matches(class_body_node):
+                            func_capture_dict = {k: v[0] if v else None for k, v in func_capture_dict.items()}
                             func_name_node = func_capture_dict.get('function.name')
                             func_body_node = func_capture_dict.get('function.body')
                             func_params_node = func_capture_dict.get('function.parameters')
@@ -607,6 +612,7 @@ class UCLGenerator:
         query = self.queries[extension]['function']
         try:
             for pattern_index, capture_dict in query.matches(node):
+                capture_dict = {k:v[0] if v else None for k,v in capture_dict.items()}
                 func_def_node = capture_dict.get('function.def')
                 func_name_node = capture_dict.get('function.name')
                 func_body_node = capture_dict.get('function.body')
@@ -660,6 +666,7 @@ class UCLGenerator:
         query = self.queries[extension]['call']
         try:
             for pattern_index, capture_dict in query.matches(node):
+                capture_dict = {k: v[0] if v else None for k, v in capture_dict.items()}
                 call_name_node = capture_dict.get('call.name')
                 call_object_node = capture_dict.get('call.object')
                 call_method_node = capture_dict.get('call.method')
@@ -691,6 +698,7 @@ class UCLGenerator:
         query = self.queries[extension]['raise']
         try:
             for pattern_index, capture_dict in query.matches(node):
+                capture_dict = {k: v[0] if v else None for k, v in capture_dict.items()}
                 raise_node = capture_dict.get('raise')
                 if raise_node:
                     # Get the exception being raised (often the first child after 'raise'/'throw')
@@ -725,6 +733,7 @@ class UCLGenerator:
 
             # Find the docstring capture within the matches *related* to the input node
             for pattern_index, capture_dict in matches:
+                capture_dict = {k: v[0] if v else None for k, v in capture_dict.items()}
                 docstring_node = capture_dict.get('docstring')
                 parent_capture_node = capture_dict.get('function_with_docstring') or capture_dict.get(
                     'class_with_docstring')
