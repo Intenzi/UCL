@@ -2,6 +2,7 @@ Flask==3.0.3
 Flask_Cors==5.0.0
 GitPython==3.1.44
 requests==2.31.0
+tree_sitter==0.24.0
 tree_sitter_language_pack==0.9.0
 uvicorn==0.35.0
 gunicorn==23.0.0
