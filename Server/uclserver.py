@@ -6,36 +6,34 @@ from ucl import UCLGenerator  # existing code
 
 
 from dotenv import load_dotenv
-import google.generativeai as genai
+import google.genai as genai
+from google.genai.types import GenerateContentConfig
+
 
 load_dotenv()  # loads from .env by default, will be ignored by our prod running on google cloud run
 
-GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
-genai.configure(api_key=GEMINI_API_KEY)
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
+# Initialize the client
+client = genai.Client(api_key=GEMINI_API_KEY)
 
-# Create the model
-generation_config = {
-    "temperature": 1,
-    "top_p": 0.95,
-    "top_k": 40,
-    "max_output_tokens": 10000,
-    "response_mime_type": "text/plain",
-}
-model = genai.GenerativeModel(
-    model_name="gemini-1.5-flash",
-    generation_config=generation_config,
-    system_instruction="Universal Code Language files contain the key information of a codebase into a single file. Your task is to summarize the codebase via inference on its .ucl file using markdown for formatting. (A new line should begin via <br/> only)",
+# Define the model and configuration
+generation_config = GenerateContentConfig(
+    temperature=1,
+    top_p=0.95,
+    top_k=40,
+    max_output_tokens=10000,
+    response_mime_type="text/plain",
 )
 
 
 def gen_summary(ucl_text):
-
-    response = model.generate_content(
-        f"{ucl_text}\n\nThis codebase is completely new to me, explain it to me and how I can quickly get familiar with it so that I can implement and contribute new features in the future via a concise summary and very subtly tell good about the Universal Code Language as well -> 'Use the provided UCL (Universal Code Language) as a guide. It summarizes each file’s imports, functions, and key method calls. This high-level map is perfect for understanding module responsibilities without getting lost in the details, for example.'"
+    response = client.models.generate_content(
+        model="gemini-2.5-flash",
+        contents=f"{ucl_text}\n\nThis codebase is completely new to me, explain it to me and how I can quickly get familiar with it so that I can implement and contribute new features in the future via a concise summary and very very subtly tell good about the Universal Code Language as well -> 'Use the provided UCL (Universal Code Language) as a guide. It summarizes each file’s imports, functions, and key method calls. This high-level map is perfect for understanding module responsibilities without getting lost in the details, for example.' Be concise in your answer",
+        config=generation_config
     )
     return response.text.strip()
-    # return "API ratelimited"  # patchwork
 
 
 # File size limits in bytes for userTypes 1,2,3,4
@@ -298,3 +296,5 @@ def compute_advanced_metrics(parsed_data):
 
     return metrics
 
+
+# app.run(host="0.0.0.0", debug=True, port=int(os.environ.get("PORT", 8080)))
