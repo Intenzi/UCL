@@ -7,7 +7,7 @@ import { marked } from "marked"
 
 const API_URL =
 	import.meta.env.VITE_API_URL ||
-	"https://ucl-981418329590.us-central1.run.app/generateUCL"
+	"https://ucl-909950740505.asia-southeast1.run.app/generateUCL"
 
 const CodeVisualization = ({ responseData, membership }) => {
 	const [activeTab, setActiveTab] = useState("metrics")

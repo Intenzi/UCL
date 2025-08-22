@@ -5,5 +5,5 @@ requests==2.31.0
 tree_sitter_language_pack==0.9.0
 uvicorn==0.35.0
 gunicorn==23.0.0
-git+https://github.com/jstmn/generative-ai-python-3.8
+google-genai==1.8.0
 python-dotenv
