@@ -28,7 +28,9 @@ class UCLGenerator:
         '.java': 'java',
         '.pde': 'java',  # processing lib
         '.c': 'c',
+        '.h': 'c',  # header file
         '.cpp': 'cpp',
+        '.hpp': 'cpp',  # header file
         '.go': 'go',
         '.rb': 'ruby',
         '.php': 'php',
@@ -366,6 +368,450 @@ class UCLGenerator:
             self.queries[ext]['docstring'] = language.query("""
                 (block_comment) @docstring
             """)  # This is a simplification, might capture non-javadoc comments too
+
+        elif lang == 'ruby':
+            self.queries[ext]['import'] = language.query("""
+                (call
+                    method: (identifier) @method.name
+                    (#eq? @method.name "require")
+                    arguments: (argument_list (string) @import)
+                ) @import
+                (call
+                    method: (identifier) @method.name
+                    (#eq? @method.name "require_relative")
+                    arguments: (argument_list (string) @import)
+                ) @import
+            """)
+            self.queries[ext]['class'] = language.query("""
+                (class
+                    name: (constant) @class.name
+                    body: (body_statement) @class.body
+                ) @class.def
+                (module
+                    name: (constant) @class.name
+                    body: (body_statement) @class.body
+                ) @class.def
+            """)
+            self.queries[ext]['class_attribute'] = language.query("""
+                (class
+                    body: (body_statement
+                        (assignment
+                            left: (identifier) @attribute.name
+                        )
+                    )
+                )
+                (module
+                    body: (body_statement
+                        (assignment
+                            left: (identifier) @attribute.name
+                        )
+                    )
+                )
+            """)
+            self.queries[ext]['function'] = language.query("""
+                (method
+                    name: (identifier) @function.name
+                    parameters: (method_parameters) @function.parameters
+                    body: (body_statement) @function.body
+                ) @function.def
+                (singleton_method
+                    name: (identifier) @function.name
+                    parameters: (method_parameters) @function.parameters
+                    body: (body_statement) @function.body
+                ) @function.def
+            """)
+            self.queries[ext]['call'] = language.query("""
+                (call
+                    method: (identifier) @call.name
+                ) @call
+                (call
+                    receiver: (identifier) @call.object
+                    method: (identifier) @call.method
+                ) @call
+            """)
+            self.queries[ext]['raise'] = language.query("""
+                (call
+                    method: (identifier) @method.name
+                    (#eq? @method.name "raise")
+                ) @raise
+            """)
+            self.queries[ext]['docstring'] = language.query("""
+                (method
+                    (comment) @docstring
+                    .
+                    name: (identifier)
+                ) @function_with_docstring
+                (singleton_method
+                    (comment) @docstring
+                    .
+                    name: (identifier)
+                ) @function_with_docstring
+                (class
+                    (comment) @docstring
+                    .
+                    name: (constant)
+                ) @class_with_docstring
+                (module
+                    (comment) @docstring
+                    .
+                    name: (constant)
+                ) @class_with_docstring
+            """)
+            self.queries[ext]['comment'] = language.query("""
+                (comment) @comment
+            """)
+
+        # C Queries
+        if lang == 'c':
+            self.queries[ext]['import'] = language.query("""
+                (preproc_include
+                    path: (string_literal) @import
+                ) @import
+            """)
+            self.queries[ext]['class'] = language.query("""
+                (struct_specifier
+                    name: (type_identifier) @class.name
+                    body: (field_declaration_list) @class.body
+                ) @class.def
+                (union_specifier
+                    name: (type_identifier) @class.name
+                    body: (field_declaration_list) @class.body
+                ) @class.def
+            """)
+            self.queries[ext]['class_attribute'] = language.query("""
+                (struct_specifier
+                    body: (field_declaration_list
+                        (field_declaration
+                            declarator: (field_identifier) @attribute.name
+                        )
+                    )
+                )
+                (union_specifier
+                    body: (field_declaration_list
+                        (field_declaration
+                            declarator: (field_identifier) @attribute.name
+                        )
+                    )
+                )
+            """)
+            self.queries[ext]['function'] = language.query("""
+                (function_definition
+                    declarator: (function_declarator
+                        declarator: (identifier) @function.name
+                        parameters: (parameter_list) @function.parameters
+                    )
+                    body: (compound_statement) @function.body
+                ) @function.def
+            """)
+            self.queries[ext]['call'] = language.query("""
+                (call_expression
+                    function: (identifier) @call.name
+                ) @call
+                (call_expression
+                    function: (field_expression
+                        argument: (identifier) @call.object
+                        field: (field_identifier) @call.method
+                    )
+                ) @call
+            """)
+            self.queries[ext]['raise'] = language.query("""
+                ; C does not have a native raise/throw construct
+                ; Using error-handling function calls like abort() or exit()
+                (call_expression
+                    function: (identifier) @call.name
+                    (#match? @call.name "^(abort|exit)$")
+                ) @raise
+            """)
+            self.queries[ext]['docstring'] = language.query("""
+                (function_definition
+                    (comment) @docstring
+                    .
+                    declarator: (function_declarator)
+                ) @function_with_docstring
+                (struct_specifier
+                    (comment) @docstring
+                    .
+                    name: (type_identifier)
+                ) @class_with_docstring
+                (union_specifier
+                    (comment) @docstring
+                    .
+                    name: (type_identifier)
+                ) @class_with_docstring
+            """)
+            self.queries[ext]['comment'] = language.query("""
+                (comment) @comment
+            """)
+
+        # C++ Queries
+        if lang == 'cpp':
+            self.queries[ext]['import'] = language.query("""
+                (preproc_include
+                    path: (string_literal) @import
+                ) @import
+            """)
+            self.queries[ext]['class'] = language.query("""
+                (class_specifier
+                    name: (type_identifier) @class.name
+                    body: (field_declaration_list) @class.body
+                ) @class.def
+                (struct_specifier
+                    name: (type_identifier) @class.name
+                    body: (field_declaration_list) @class.body
+                ) @class.def
+            """)
+            self.queries[ext]['class_attribute'] = language.query("""
+                (class_specifier
+                    body: (field_declaration_list
+                        (field_declaration
+                            declarator: (field_identifier) @attribute.name
+                        )
+                    )
+                )
+                (struct_specifier
+                    body: (field_declaration_list
+                        (field_declaration
+                            declarator: (field_identifier) @attribute.name
+                        )
+                    )
+                )
+            """)
+            self.queries[ext]['function'] = language.query("""
+                (function_definition
+                    declarator: (function_declarator
+                        declarator: (identifier) @function.name
+                        parameters: (parameter_list) @function.parameters
+                    )
+                    body: (compound_statement) @function.body
+                ) @function.def
+                (function_definition
+                    declarator: (template_function
+                        name: (identifier) @function.name
+                        parameters: (parameter_list) @function.parameters
+                    )
+                    body: (compound_statement) @function.body
+                ) @function.def
+            """)
+            self.queries[ext]['call'] = language.query("""
+                (call_expression
+                    function: (identifier) @call.name
+                ) @call
+                (call_expression
+                    function: (field_expression
+                        argument: (identifier) @call.object
+                        field: (field_identifier) @call.method
+                    )
+                ) @call
+            """)
+            self.queries[ext]['raise'] = language.query("""
+                (throw_statement) @raise
+            """)
+            self.queries[ext]['docstring'] = language.query("""
+                (function_definition
+                    (comment) @docstring
+                    .
+                    declarator: (function_declarator)
+                ) @function_with_docstring
+                (function_definition
+                    (comment) @docstring
+                    .
+                    declarator: (template_function)
+                ) @function_with_docstring
+                (class_specifier
+                    (comment) @docstring
+                    .
+                    name: (type_identifier)
+                ) @class_with_docstring
+                (struct_specifier
+                    (comment) @docstring
+                    .
+                    name: (type_identifier)
+                ) @class_with_docstring
+            """)
+            self.queries[ext]['comment'] = language.query("""
+                (comment) @comment
+            """)
+
+        # Go Queries
+        if lang == 'go':
+            self.queries[ext]['import'] = language.query("""
+                (import_declaration
+                    (import_spec
+                        path: (string_literal) @import
+                    )
+                ) @import
+                (import_declaration
+                    (import_spec_list
+                        (import_spec
+                            path: (string_literal) @import
+                        )
+                    )
+                ) @import
+            """)
+            self.queries[ext]['class'] = language.query("""
+                (type_declaration
+                    (type_spec
+                        name: (type_identifier) @class.name
+                        type: (struct_type
+                            (field_declaration_list) @class.body
+                        )
+                    )
+                ) @class.def
+            """)
+            self.queries[ext]['class_attribute'] = language.query("""
+                (type_declaration
+                    (type_spec
+                        type: (struct_type
+                            (field_declaration_list
+                                (field_declaration
+                                    name: (field_identifier) @attribute.name
+                                )
+                            )
+                        )
+                    )
+                )
+            """)
+            self.queries[ext]['function'] = language.query("""
+                (function_declaration
+                    name: (identifier) @function.name
+                    parameters: (parameter_list) @function.parameters
+                    body: (block) @function.body
+                ) @function.def
+                (method_declaration
+                    name: (field_identifier) @function.name
+                    parameters: (parameter_list) @function.parameters
+                    body: (block) @function.body
+                ) @function.def
+            """)
+            self.queries[ext]['call'] = language.query("""
+                (call_expression
+                    function: (identifier) @call.name
+                ) @call
+                (call_expression
+                    function: (selector_expression
+                        operand: (identifier) @call.object
+                        field: (field_identifier) @call.method
+                    )
+                ) @call
+            """)
+            self.queries[ext]['raise'] = language.query("""
+                (call_expression
+                    function: (identifier) @call.name
+                    (#match? @call.name "^(panic)$")
+                ) @raise
+            """)
+            self.queries[ext]['docstring'] = language.query("""
+                (function_declaration
+                    (comment) @docstring
+                    .
+                    name: (identifier)
+                ) @function_with_docstring
+                (method_declaration
+                    (comment) @docstring
+                    .
+                    name: (field_identifier)
+                ) @function_with_docstring
+                (type_declaration
+                    (comment) @docstring
+                    .
+                    (type_spec
+                        name: (type_identifier)
+                    )
+                ) @class_with_docstring
+            """)
+            self.queries[ext]['comment'] = language.query("""
+                (comment) @comment
+            """)
+
+        # Swift Queries
+        if lang == 'swift':
+            self.queries[ext]['import'] = language.query("""
+                (import_declaration) @import
+            """)
+            self.queries[ext]['class'] = language.query("""
+                (class_declaration
+                    name: (simple_identifier) @class.name
+                    body: (class_body) @class.body
+                ) @class.def
+                (struct_declaration
+                    name: (simple_identifier) @class.name
+                    body: (struct_body) @class.body
+                ) @class.def
+                (protocol_declaration
+                    name: (simple_identifier) @class.name
+                    body: (protocol_body) @class.body
+                ) @class.def
+            """)
+            self.queries[ext]['class_attribute'] = language.query("""
+                (class_declaration
+                    body: (class_body
+                        (property_declaration
+                            name: (simple_identifier) @attribute.name
+                        )
+                    )
+                )
+                (struct_declaration
+                    body: (struct_body
+                        (property_declaration
+                            name: (simple_identifier) @attribute.name
+                        )
+                    )
+                )
+                (protocol_declaration
+                    body: (protocol_body
+                        (property_declaration
+                            name: (simple_identifier) @attribute.name
+                        )
+                    )
+                )
+            """)
+            self.queries[ext]['function'] = language.query("""
+                (function_declaration
+                    name: (simple_identifier) @function.name
+                    parameters: (parameter_list) @function.parameters
+                    body: (code_block) @function.body
+                ) @function.def
+            """)
+            self.queries[ext]['call'] = language.query("""
+                (call_expression
+                    function: (simple_identifier) @call.name
+                ) @call
+                (call_expression
+                    function: (member_access
+                        base: (simple_identifier) @call.object
+                        name: (simple_identifier) @call.method
+                    )
+                ) @call
+            """)
+            self.queries[ext]['raise'] = language.query("""
+                (throw_statement) @raise
+            """)
+            self.queries[ext]['docstring'] = language.query("""
+                (function_declaration
+                    (multi_line_comment) @docstring
+                    .
+                    name: (simple_identifier)
+                ) @function_with_docstring
+                (class_declaration
+                    (multi_line_comment) @docstring
+                    .
+                    name: (simple_identifier)
+                ) @class_with_docstring
+                (struct_declaration
+                    (multi_line_comment) @docstring
+                    .
+                    name: (simple_identifier)
+                ) @class_with_docstring
+                (protocol_declaration
+                    (multi_line_comment) @docstring
+                    .
+                    name: (simple_identifier)
+                ) @class_with_docstring
+            """)
+            self.queries[ext]['comment'] = language.query("""
+                (comment) @comment
+                (multi_line_comment) @comment
+            """)
 
     def clone_repository(self, repo_url, target_dir=None):
         """Clone a repository from GitHub."""
