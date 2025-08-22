@@ -137,7 +137,7 @@ Setting up UCL involves both backend and frontend components. Follow these instr
 
 ### Prerequisites
 
-* Python 3.8+ (3.8 specifically required for Gemini API integration)
+* Python 3.11+
 * Node.js and npm
 * Git
 
@@ -148,7 +148,7 @@ Setting up UCL involves both backend and frontend components. Follow these instr
 1. Clone the repository
    ```sh
    git clone https://github.com/Intenzi/UCL.git
-   cd ucl/server
+   cd UCL/Server
    ```
 
 2. Install Python dependencies
@@ -156,19 +156,14 @@ Setting up UCL involves both backend and frontend components. Follow these instr
    pip install requirements.txt
    ```
 
-3. For Gemini API integration (optional but recommended)
-   ```sh
-   pip install git+https://github.com/jstmn/generative-ai-python-3.8
-   ```
-
-4. Run the UCL server
+4. Run the UCL backend
    ```sh
    python uclserver.py
    ```
-   
-   Or for backend-only processing:
+
+   Or for tkinter gui based self-deployment:
    ```sh
-   python ucl.py
+   python gui.py
    ```
 
 #### Frontend Setup
@@ -254,16 +249,18 @@ Based on this codebase, explain how the data flows from the frontend to the data
 <!-- ROADMAP -->
 ## Roadmap
 
-- [x] Core UCL format specification
-- [x] Tree-sitter integration for parsing
-- [x] Basic web interface
-- [x] Gemini API integration
+- ✅ Core UCL format specification
+- ✅ Tree-sitter integration for parsing
+- ✅ Basic web interface
+- ✅ Gemini API integration
 - [ ] Support for additional languages
-  - [x] JavaScript/TypeScript
-  - [x] Python
-  - [x] Java
-  - [ ] C/C++
-  - [ ] Go
+  - ✅ JavaScript/TypeScript
+  - ✅ Python
+  - ✅ Java
+  - ✅ C/C++
+  - ✅ Go
+  - ✅ Ruby
+- ✅ UCL MCP
 - [ ] IDE plugins
 - [ ] CI/CD integration
 - [ ] Enterprise features
@@ -291,7 +288,7 @@ Don't forget to give the project a star! Thanks again!
 <!-- LICENSE -->
 ## License
 
-Distributed under the Unlicense License. See `LICENSE.txt` for more information.
+Distributed under the MIT License. See `LICENSE.txt` for more information.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
